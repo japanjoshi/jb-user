@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "400434009069",
+    "project_id": "jbadmin-e0498",
+    "storage_bucket": "jbadmin-e0498.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:400434009069:android:bb676f6701e84832ef0de4",
+        "android_client_info": {
+          "package_name": "com.aol.jb_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "400434009069-9kmksetf8n5k05k38mfhpf3h165a6r1l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO0kLy1gTWmOqMZjoDL7zZXXVjXaLoK28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "400434009069-9kmksetf8n5k05k38mfhpf3h165a6r1l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "400434009069-h7vls7clq7gst0tv4icasis6e560136s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.jbAdmin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:400434009069:android:304684ffdd6eb594ef0de4",
+        "android_client_info": {
+          "package_name": "com.aol.jb_userapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "400434009069-9kmksetf8n5k05k38mfhpf3h165a6r1l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO0kLy1gTWmOqMZjoDL7zZXXVjXaLoK28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "400434009069-9kmksetf8n5k05k38mfhpf3h165a6r1l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "400434009069-h7vls7clq7gst0tv4icasis6e560136s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.jbAdmin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

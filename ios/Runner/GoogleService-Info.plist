@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyD7UrF6gWXTx7EGZASlD8DxYVYjce5DqcQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>400434009069</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.aol.jbuserapp</string>
+	<key>PROJECT_ID</key>
+	<string>jbadmin-e0498</string>
+	<key>STORAGE_BUCKET</key>
+	<string>jbadmin-e0498.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:400434009069:ios:6912ff2a4c7ebba6ef0de4</string>
+	<key>DATABASE_URL</key>
+	<string>https://jbadmin-e0498-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+</dict>
+</plist>
