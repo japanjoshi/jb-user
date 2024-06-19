@@ -1,9 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-// import 'package:jb_user_app/screens/main_screen.dart'; // Update with your main screen
+import 'package:jb_user_app/screens/ui/intro/enter_basic-1.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -13,62 +12,85 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  PhoneNumber? phoneNumber;
-  final supabaseClient = Supabase.instance.client;
+  final phoneController = TextEditingController();
+  final otpController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  /// Finds or creates a user based on phone number and establishes a session
-  Future<void> findOrCreateUser(String phoneNumber) async {
-    // Attempt to find the user by their phone number
-    final response = await supabaseClient
-        .from('users')
-        .select('id')
-        .eq('phone_number', phoneNumber)
-        .maybeSingle();
+  String verificationId = '';
+  bool isOtpSent = false;
+  bool isLoading = false;
+  String errorMessage = '';
+  String selectedCountryCode = '+91';
 
-    if (response != null && response.isNotEmpty) {
-      // If the phone number is found, consider the user already logged in
-      print('Phone number found. Logging in.');
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => const MainScreen()), // Replace with your main screen widget
-      // );
-    } else {
-      // Insert a new user with this phone number
-      final insertResponse = await supabaseClient
-          .from('users')
-          .insert({'phone_number': phoneNumber});
-
-      if (insertResponse.error != null) {
-        print('Error creating new user: ${insertResponse.error!.message}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${insertResponse.error!.message}')),
-        );
-      } else {
-        print('User created successfully with phone number.');
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(
-        //       builder: (context) =>
-        //           const MainScreen()), // Navigate to main screen
-        // );
-      }
+  void sendOtp() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
+    try {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: '$selectedCountryCode${phoneController.text}',
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await _auth.signInWithCredential(credential);
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => BasicDetailsPage1()));
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          setState(() {
+            errorMessage = 'Verification failed. Please try again.';
+            isLoading = false;
+          });
+          if (e.code == 'invalid-phone-number') {
+            setState(() {
+              errorMessage = 'The provided phone number is not valid.';
+            });
+          } else if (e.code == 'too-many-requests') {
+            setState(() {
+              errorMessage = 'Too many requests. Please try again later.';
+            });
+          }
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          setState(() {
+            this.verificationId = verificationId;
+            isOtpSent = true;
+            isLoading = false;
+          });
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          setState(() {
+            this.verificationId = verificationId;
+          });
+        },
+      );
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Failed to send OTP. Please try again.';
+        isLoading = false;
+      });
     }
   }
 
-  /// Logic to handle phone number-based authentication
-  void _continue() async {
-    if (phoneNumber == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid phone number')),
+  void verifyOtp() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: otpController.text,
       );
-      return;
+
+      await _auth.signInWithCredential(credential);
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => BasicDetailsPage1()));
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Invalid OTP. Please try again.';
+        isLoading = false;
+      });
     }
-
-    // Retrieve the phone number as a string
-    final String phone = phoneNumber!.phoneNumber ?? '';
-
-    // Find or create the user with this phone number
-    await findOrCreateUser(phone);
   }
 
   @override
@@ -86,42 +108,92 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Center(
-                    child: Icon(
-                      Icons.spa_outlined,
-                      color: Colors.orangeAccent,
-                      size: 120,
+                    child: Image.asset(
+                      'assets/images/jb_admin_main_page.png',
+                      width: 149,
                     ),
-                  ),
-                ),
-                Text(
-                  'Welcome to Team Happiness',
-                  style: GoogleFonts.raleway(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 20,
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 10.0, right: 20, top: 100, bottom: 70),
-                  child: InternationalPhoneNumberInput(
-                    onInputChanged: (PhoneNumber number) {
-                      phoneNumber = number;
-                    },
-                    selectorConfig: const SelectorConfig(
-                      selectorType: PhoneInputSelectorType.DIALOG,
-                      showFlags: false,
-                    ),
-                    initialValue: PhoneNumber(isoCode: 'IN'),
-                    inputDecoration: const InputDecoration(
-                      border: UnderlineInputBorder(),
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Text(
+                    'Welcome to Team Happiness',
+                    style: GoogleFonts.raleway(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 20,
                     ),
                   ),
                 ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 60,
+                            child: DropdownButtonFormField<String>(
+                              value: selectedCountryCode,
+                              items: [
+                                DropdownMenuItem(
+                                  child: Text('+91'),
+                                  value: '+91',
+                                ),
+                                DropdownMenuItem(
+                                  child: Text('+1'),
+                                  value: '+1',
+                                ),
+                                // Add more country codes as needed
+                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedCountryCode = value!;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                border: UnderlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: TextField(
+                              controller: phoneController,
+                              keyboardType: TextInputType.phone,
+                              decoration: const InputDecoration(
+                                labelText: 'Enter your phone number',
+                                border: UnderlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (isOtpSent)
+                        TextField(
+                          controller: otpController,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Enter OTP',
+                            border: UnderlineInputBorder(),
+                          ),
+                        ),
+                      if (errorMessage.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            errorMessage,
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
                 GestureDetector(
-                  onTap: _continue,
+                  onTap: isOtpSent ? verifyOtp : sendOtp,
                   child: Container(
                     width: 219,
                     height: 58,
@@ -130,13 +202,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       borderRadius: BorderRadius.circular(32),
                     ),
                     child: Center(
-                      child: Text(
-                        'Continue',
-                        style: GoogleFonts.raleway(
-                          color: Colors.white,
-                          fontSize: 17,
-                        ),
-                      ),
+                      child: isLoading
+                          ? CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : Text(
+                              isOtpSent ? 'Verify OTP' : 'Send OTP',
+                              style: GoogleFonts.raleway(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                     ),
                   ),
                 ),
